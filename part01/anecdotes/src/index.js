@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-
+// github-testi: tämä rivi lisätty lokaalisti klo 13:55
 const App = (props) => {
   // tilanhallinta: alussa kaikilla vitseillä on 0 ääntä
   const [selected, setSelected] = useState(0)
@@ -45,11 +45,7 @@ const Button = (props) => (
   </button>
 )
   
-//seuraavaksi: Anecdote with most votes, ks tg 27.3.2019 0:33 Meri
-// ts. pitäisi näyttää vitsi, jolla korkein votes-arvo
-// eka vitsi (0), toka vitsi (1) jne.
-// pitäisi käydä taulukko läpi ja tulostaa suurin arvo
-// 1. Teen funktio joka tulostaa tietyn vitsin äänimäärän
+
 const anecdotes = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
