@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import Persons from './components/Persons'
 import SearchFilter from './components/SearchFilter'
-// kesken 2.9: filteröinti
+import PersonForm from './components/PersonForm'
+
 const App = () => {
-    // state hooks, tilanhallinta
+    // state hooks
     const [persons, setPersons] = useState([
         { name: 'Arto Hellas', number: '050' },
         { name: 'Matti Aho', number: '040' }
@@ -19,7 +20,7 @@ const App = () => {
             name: newName,
             number: newNumber
         }
-        // Kuuluu addNameen: lisää uuden personObjectin (tekee uuden taulukon samalla nimellä)
+
         setPersons(persons.concat(personObject))
         setNewName('')
         setNewNumber('')
@@ -48,33 +49,30 @@ const App = () => {
         window.alert(`${newName} is already added to phonebook`)
     }
 
-
- 
     return (
         <div>
             <h2>Phonebook</h2>
-      filter by name: <input name={newName} onChange={handleNameChange} />
+
             <SearchFilter filter={newFilter} handler={handleFilterChange} />
+
             <h3>Add a new</h3>
-            <form onSubmit={addName}>
-                name: <input name={newName} onChange={handleNameChange} 
-                number={newNumber} onChange={handleNumberChange}
-                />
-                <button type="submit">add</button>
-            </form>
+            <PersonForm
+                handleNameChange={handleNameChange}
+                name={newName}
+                handleNumberChange={handleNumberChange}
+                number={newNumber}
+                addName={addName}
+            />
             <h2>Numbers</h2>
             <Persons person={persons} ignore={ignoreCase} />
             {persons.map((person, i) =>
                 <Persons key={i} person={person} />
-
+               
             )}
-            {persons.filter}
-
         </div>
-
-
     )
 }
+
 
 export default App
 
