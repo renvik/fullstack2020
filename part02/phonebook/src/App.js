@@ -1,17 +1,28 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import Persons from './components/Persons'
 import SearchFilter from './components/SearchFilter'
 import PersonForm from './components/PersonForm'
 
 const App = () => {
     // state hooks
-    const [persons, setPersons] = useState([
-        { name: 'Arto Hellas', number: '050' },
-        { name: 'Matti Aho', number: '040' }
-    ])
+    const [persons, setPersons] = useState([''])
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [newFilter, setNewFilter] = useState('')
+    
+    useEffect(() => {
+        console.log('in Effect hook')
+        axios
+            .get('http://localhost:3001/persons')
+            .then(response => {
+                console.log('promise fulfilled')
+                setPersons(response.data)
+            })
+    }, [])
+    console.log('render', persons.length, 'persons')
+    
+    
     // addName-metodi huolehtii nimen lisäämisestä oliolle
     const addName = (event) => {
         event.preventDefault()
