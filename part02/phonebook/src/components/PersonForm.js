@@ -1,9 +1,9 @@
 import React from 'react'
 
 // saa parametrina metodit 2 kpl, tapahtumankäsittelijät ja oliomuuttujia
-const PersonForm = ({ addName, handleNameChange, name, handleNumberChange, number }) => {
+const PersonForm = ({ addPerson, handleNameChange, name, handleNumberChange, number }) => {
     return (
-        <form onSubmit={addName}>
+        <form onSubmit={addPerson}>
             <div>
                 name: <input onChange={handleNameChange} value={name} />
             </div>
