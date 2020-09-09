@@ -6,6 +6,7 @@ import axios from 'axios'
 // korjaa: Each child in a list should have a unique "key" prop
 // tutki contact-komponentti propsien käytön osalta, person tulee Persons komponentista
 // to-do 2.16: Siirrä palvelimen kanssa kommunikoinnista vastaava toiminnallisuus omaan moduuliin tämän osan materiaalissa olevan esimerkin tapaan.
+// 9.9.: ei toimi lisäys eikä hae pohjatietoja, syy json server? axios
 
 const App = (props) => {
   // henkilöiden nimet on muuttujassa persons
