@@ -2,45 +2,37 @@ import React, { useState, useEffect } from 'react';
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import SearchFilter from './components/SearchFilter'
-import axios from 'axios'
-// korjaa: Each child in a list should have a unique "key" prop
-// tutki contact-komponentti propsien käytön osalta, person tulee Persons komponentista
-// to-do 2.16: Siirrä palvelimen kanssa kommunikoinnista vastaava toiminnallisuus omaan moduuliin tämän osan materiaalissa olevan esimerkin tapaan.
-// 9.9.: ei toimi lisäys eikä hae pohjatietoja, syy json server? axios
-// muutos ssh:n testausta varten
+import dbService from './services/names'
+import ErrorMessage from './components/ErrorMessage'
+
+// TEKEMÄTTÄ: 2.18 update
 
 const App = (props) => {
-  // henkilöiden nimet on muuttujassa persons
-  const [persons, setPersons] = useState([
-   // { name: 'Arto Hellas', number: 401234 },
-   // { name: 'Pentti Putkonen', number: 50567 }
-  ])
-
   //  state hookit, jotka säilyttävät muuttujan tilan ja mahdollistavat sen asettamisen
+  // henkilöiden nimet on muuttujassa persons
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
   
   // useEffect-hook, joka hakee datan "palvelimelta"
   useEffect(() => {    
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
+    dbService.getAll().then(response => {
+        setPersons(response)
       })
   }, [])
-  // oletettavasti tähän tulee datan tallennus
   // tapahtumakäsittelijä, nuolisyntaksi, argumenttina event, luo uuden henkilö-olion
   const addPerson = (event) => {
     event.preventDefault()
     const personObject = {
       name: newName,
-      number: newNumber
+      number: newNumber,
+      id: Math.floor(Math.random() * 101)
     }
-    // if alta muutettu leikattu rivit 40-42
+  
     if (!persons.some(person => person.name === newName)) {
-     axios
-     .post('http://localhost:3001/persons', personObject)
+     dbService.createPerson(personObject)
      .then(response => {
        setPersons(persons.concat(response.data))
        setNewName('')
@@ -71,9 +63,33 @@ const App = (props) => {
       .includes(newFilter.toUpperCase())
   )
 
+  const handleDeletePerson = (name, id) => {
+      if (window.confirm(`Poistetaanko ${name} ?`)) {
+        console.log('iffissä')
+        dbService
+          .deletePerson(id)
+          .then(() => {
+            setPersons(persons.filter(n => n.id !== id))
+            setErrorMessage(`Poistettiin ${name}`)
+            setNewName("")
+            setNewNumber("")
+          })
+          .catch(error => {
+            setPersons(persons.filter(n => n.name !== name));
+            setErrorMessage(`Käyttäjä ${name} on jo poistettu palvelimelta.`);
+          });
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 3000);
+      }
+    };
+
+         
+
   return (
     <div>
       <h1>Phonebook</h1>
+      <ErrorMessage message={errorMessage} />
       <SearchFilter filter={newFilter} handler={handleFilterChange} />
       <h2>Add a new person</h2>
       <PersonForm
@@ -82,9 +98,13 @@ const App = (props) => {
         handleNewNumber={handleNewNumber}
         newNumber={newNumber}
         handleNameChange={handleNameChange}
+        
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} ignore={ignoreCase} />
+      <Persons persons={persons} 
+      ignore={ignoreCase}
+      handleDeletePerson={handleDeletePerson}
+      />
     </div>
   )
 }

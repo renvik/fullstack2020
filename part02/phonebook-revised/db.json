@@ -1,11 +1,6 @@
 {
   "persons": [
     {
-      "name": "Arto Hellas",
-      "number": "040-123456",
-      "id": 1
-    },
-    {
       "name": "Ada Lovelace",
       "number": "39-44-5323523",
       "id": 2
@@ -29,6 +24,36 @@
       "name": "pertti mikkola",
       "number": "0400",
       "id": 6
+    },
+    {
+      "name": "Pekka Keskinen",
+      "number": "0500567943",
+      "id": 7
+    },
+    {
+      "name": "Mika Nieminen",
+      "number": "0405963954",
+      "id": 8
+    },
+    {
+      "name": "Matti Näsä",
+      "number": "0402934859",
+      "id": 35
+    },
+    {
+      "name": "",
+      "number": "",
+      "id": 25
+    },
+    {
+      "name": "mika",
+      "number": "0440",
+      "id": 94
+    },
+    {
+      "name": "pentti Niemi",
+      "number": "050697848",
+      "id": 37
     }
   ]
 }
