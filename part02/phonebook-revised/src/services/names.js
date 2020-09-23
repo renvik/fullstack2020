@@ -1,8 +1,7 @@
 import axios from 'axios'
 const baseUrl = 'http://localhost:3001/persons'
 
-// palvelimen kanssa tapahtuvat kommunikointi on eristetty tähän moduuliin
-// mm. axiosin käyttö poistettu app.js:stä ja tehdään tässä
+// palvelimen kanssa tapahtuvat kommunikointi on eristetty tähän moduuliin, mm. axiosin käyttö poistettu app.js:stä ja tehdään tässä
 
 const getAll = () => {
     const request = axios.get(baseUrl)
@@ -13,11 +12,10 @@ const createPerson = newObject => {
     return axios.post(baseUrl, newObject)
 }
 
-const updatePerson = (id, update) => {
-    const request = axios.put(`${baseUrl}/${id}`, update)
-    return request.then(response => {
-        return response
-    })
+const updatePerson = (id, newObject) => {
+    const request = axios.put(`${baseUrl}/${id}`, newObject)
+    return request.then(response => response.data)
+    
 }
 
 const deletePerson = id => {

@@ -3,24 +3,24 @@ import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import SearchFilter from './components/SearchFilter'
 import dbService from './services/names'
-import ErrorMessage from './components/ErrorMessage'
+import Notification from './components/Notification'
 
-// TEKEMÄTTÄ: 2.18 update
+
+// json-serverin käynnistys: npx json-server --port=3001 --watch db.json
 
 const App = (props) => {
   //  state hookit, jotka säilyttävät muuttujan tilan ja mahdollistavat sen asettamisen
-  // henkilöiden nimet on muuttujassa persons
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
-  
+
   // useEffect-hook, joka hakee datan "palvelimelta"
-  useEffect(() => {    
+  useEffect(() => {
     dbService.getAll().then(response => {
-        setPersons(response)
-      })
+      setPersons(response)
+    })
   }, [])
   // tapahtumakäsittelijä, nuolisyntaksi, argumenttina event, luo uuden henkilö-olion
   const addPerson = (event) => {
@@ -30,25 +30,45 @@ const App = (props) => {
       number: newNumber,
       id: Math.floor(Math.random() * 101)
     }
-  
-    if (!persons.some(person => person.name === newName)) {
-     dbService.createPerson(personObject)
-     .then(response => {
-       setPersons(persons.concat(response.data))
-       setNewName('')
-       setNewNumber('')
-     })
+    // a number update
+    if (persons.map(x => x.name).includes(newName)) {
+      if (window.confirm(`${newName} is already added to the phonebook, replace the old number with a new number?`)) {
+        const person = persons.find(p => p.name === newName)
+        const changedPerson = { ...person, number: newNumber }
+        dbService
+          .updatePerson(person.id, changedPerson).then(returnedPerson => {
+            setPersons(persons.map(p => p.id !== person.id ? p : changedPerson))
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
+            setNewName('')
+            setNewNumber('')
+            setErrorMessage(`Updated number for ${newName}`)
+          })
+      }
+      //creating a new person
     } else {
-      window.alert(`${newName} is already added to phonebook`)
-      console.log('this name will not be added')
+      dbService.createPerson(personObject)
+        .then(response => {
+          setPersons(persons.concat(response.data))
+          setNewName('')
+          setNewNumber('')
+          setErrorMessage(`Added ${newName}`)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+        })
+        .catch(error => {
+          setErrorMessage(error.response.data.error)
+        })
     }
   }
+
   // nämä funktiot tarkkailevat input-kenttien tilaa ja asettavat uuden arvon muuttujalle
   // console.log(event.target.value), tämä tulostaa konsoliin mitä syöttökentässä lukee
   const handleNameChange = (event) => {
     console.log(event.target.value)
     setNewName(event.target.value)
-    console.log('kutsuttiin nimen asettavaa setteriä')
   }
   const handleNewNumber = (event) => {
     console.log(event.target.value)
@@ -64,32 +84,31 @@ const App = (props) => {
   )
 
   const handleDeletePerson = (name, id) => {
-      if (window.confirm(`Poistetaanko ${name} ?`)) {
-        console.log('iffissä')
-        dbService
-          .deletePerson(id)
-          .then(() => {
-            setPersons(persons.filter(n => n.id !== id))
-            setErrorMessage(`Poistettiin ${name}`)
-            setNewName("")
-            setNewNumber("")
-          })
-          .catch(error => {
-            setPersons(persons.filter(n => n.name !== name));
-            setErrorMessage(`Käyttäjä ${name} on jo poistettu palvelimelta.`);
-          });
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 3000);
-      }
-    };
+    if (window.confirm(`Delete ${name} ?`)) {
+      dbService
+        .deletePerson(id)
+        .then(() => {
+          setPersons(persons.filter(n => n.id !== id))
+          setErrorMessage(`Removed ${name}`)
+          setNewName("")
+          setNewNumber("")
+        })
+        .catch(error => {
+          setPersons(persons.filter(n => n.name !== name));
+          setErrorMessage(`Käyttäjä ${name} on jo poistettu palvelimelta.`);
+        });
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 3000);
+    }
+  };
 
-         
+
 
   return (
     <div>
       <h1>Phonebook</h1>
-      <ErrorMessage message={errorMessage} />
+      <Notification message={errorMessage} />
       <SearchFilter filter={newFilter} handler={handleFilterChange} />
       <h2>Add a new person</h2>
       <PersonForm
@@ -98,12 +117,12 @@ const App = (props) => {
         handleNewNumber={handleNewNumber}
         newNumber={newNumber}
         handleNameChange={handleNameChange}
-        
+
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} 
-      ignore={ignoreCase}
-      handleDeletePerson={handleDeletePerson}
+      <Persons persons={persons}
+        ignore={ignoreCase}
+        handleDeletePerson={handleDeletePerson}
       />
     </div>
   )
