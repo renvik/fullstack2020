@@ -3,7 +3,9 @@
 // palvelin ajetaan localhostin portissa 3001
 // muutamuuta: fn + f5 -> refresh browser
 // auto-indet: ctrl + shift + i
-
+// comment: ctrl + k + c ja ctrl + k + u
+// screensbot: ctrl + shift + insert
+// VAIHE: tehtävä 3.2: oma route kun url http://localhost:3001/info sis. päivämäärän ja id lukumäärän
 
 // importoidaan noden web server -moduuli:
 const { request, response } = require('express')
@@ -34,24 +36,30 @@ let persons = [
     number: "39-23-64223122"
   }
 ]
+// tehtävä 3.1
+app.get('/api/persons', (request, response) => {
+  response.send(persons)
+})
 
+// tehtävä 3.2: kesken
+app.get('/info', (request, response) => {
+    let today = new Date()
+    response.send(
+      `<p>Phonebook has info for ${persons.length} people  </p>` + today)
+  })
+// <p>Puhelinluettelossa ${persons.length} henkilön tiedot</p> + date
+// id:llä hakeminen
 // app.get('/api/persons/:id', (request, response) => {
 //   const id = Number(request.params.id)
 //   const person = persons.find(person => person.id === id)
-//   response.json(person)
+
+//   if (person) {
+//     response.json(person)
+//   } else {
+//     response.status(404).end()
+//   }
+
 // })
-
-app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = persons.find(person => person.id === id)
-
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
-
-})
 app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
   persons = persons.filter(person => person.id !== id)
