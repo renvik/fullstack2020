@@ -1,6 +1,4 @@
 // yleistä: ctrl + c sammuttaa palvelimen, node index.js käynnistää sen
-// tämä on tehty nodella ja simuloi web palvelinta
-// palvelin ajetaan localhostin portissa 3001
 // muutamuuta: fn + f5 -> refresh browser
 // auto-indet: ctrl + shift + i
 // comment: ctrl + k + c ja ctrl + k + u
@@ -68,16 +66,23 @@ app.delete('/api/persons/:id', (request, response) => {
   response.status(204).end()
 })
 
-// 3.5 alkaa: henkilön lisääminen
+// 3.5 ja 3.6 alkaa: henkilön lisääminen ja virheenkäsittely (puuttuu nimi tai numero tai nimi on jo taulukossa)
 app.post('/api/persons', (request, response) => {
   const body = request.body
+  const existingDouble = persons.find(person => person.name === body.name)  
+  
+ 
+    if (!body.name || !body.number) {
+      return response.status(400).json({
+        error: 'name or number missing'
+      })}
 
-  if (!body.name) {
-    return response.status(400).json({
-      error: 'content missing'
-    })
-  }
-// 3.5 jatkuu: luodaan henkilö jos henkilön tiedot pyynnön mukana ->
+    if (existingDouble) {
+      return response.status(400).json({
+        error: 'name already exists'
+    })}
+
+// 3.5 ja 3.6 jatkuu: luodaan henkilö jos henkilön tiedot pyynnön mukana ->
   const person = {
     id: Math.floor(Math.random() * 100000),
     name: body.name,
@@ -88,6 +93,12 @@ app.post('/api/persons', (request, response) => {
   response.json(person)
 })
 
+// middleware, jolla saadaan virheilmoitus routejen käsittelemättömistä virhetilanteista json-muodossa
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint'})
+}
+// otetaan middleware käyttöön
+app.use(unknownEndpoint)
 
 const PORT = 3001
 app.listen(PORT, () => {
