@@ -3,15 +3,22 @@
 // auto-indet: ctrl + shift + i
 // comment: ctrl + k + c ja ctrl + k + u
 // screensbot: ctrl + shift + insert
-// VAIHE: tehtävä 3.6: uuden numeron lisäykseen virheiden käsittely
-//jonka avulla puhelinnumerotieto on mahdollista poistaa numerotiedon yksilöivään URL:iin tehtävällä HTTP DELETE -pyynnöllä.
+// konsolin avaaminen: fn + f12
+// VAIHE: tehtävä 3.7: valmis
 
 // importoidaan noden web server -moduuli:
 const { request, response } = require('express')
 const express = require('express')
 const app = express()
-// lisätään json-parseri (se ottaa pyynnön mukana olevan JSON-muotoisen datan, muuttaa sen Javascript-olioksi ja sijoittaa request-olion kenttään body ennen kuin routen käsittelijää kutsutaan.)
+const morgan = require('morgan')
+// lisätään middleware / json-parseri (se ottaa pyynnön mukana olevan JSON-muotoisen datan, muuttaa sen Javascript-olioksi ja sijoittaa request-olion kenttään body ennen kuin routen käsittelijää kutsutaan.)
 app.use(express.json())
+
+// otetaan lokitukseen morgan-middleware käyttöön 'tiny'-formatissa
+app.use(morgan('tiny'))
+app.get('/', function (req, res) {
+  response.send('hello world!')
+})
 
 let persons = [
   {
