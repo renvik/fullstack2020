@@ -5,7 +5,8 @@
 // auto-indet: ctrl + shift + i
 // comment: ctrl + k + c ja ctrl + k + u
 // screensbot: ctrl + shift + insert
-// VAIHE: tehtävä 3.2: oma route kun url http://localhost:3001/info sis. päivämäärän ja id lukumäärän
+// VAIHE: tehtävä 3.6: uuden numeron lisäykseen virheiden käsittely
+//jonka avulla puhelinnumerotieto on mahdollista poistaa numerotiedon yksilöivään URL:iin tehtävällä HTTP DELETE -pyynnöllä.
 
 // importoidaan noden web server -moduuli:
 const { request, response } = require('express')
@@ -36,62 +37,56 @@ let persons = [
     number: "39-23-64223122"
   }
 ]
-// tehtävä 3.1
+// tehtävä 3.1: valmis
 app.get('/api/persons', (request, response) => {
   response.send(persons)
 })
 
-// tehtävä 3.2: kesken
+// tehtävä 3.2: valmis
 app.get('/info', (request, response) => {
     let today = new Date()
     response.send(
       `<p>Phonebook has info for ${persons.length} people  </p>` + today)
   })
-// <p>Puhelinluettelossa ${persons.length} henkilön tiedot</p> + date
-// id:llä hakeminen
-// app.get('/api/persons/:id', (request, response) => {
-//   const id = Number(request.params.id)
-//   const person = persons.find(person => person.id === id)
 
-//   if (person) {
-//     response.json(person)
-//   } else {
-//     response.status(404).end()
-//   }
+// tehtävä 3.3: id:llä hakeminen, valmis
+app.get('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  const person = persons.find(person => person.id === id)
 
-// })
+  if (person) {
+    response.json(person)
+  } else {
+    response.status(404).end()
+  }
+})
+// tehtävä 3.4: poistaminen tietyllä id:llä, valmis
 app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
   persons = persons.filter(person => person.id !== id)
 
   response.status(204).end()
 })
-const generateId = () => {
-  const maxId = persons.length > 0
-    ? Math.max(...persons.map(n => n.id))
-    : 0
-  return maxId + 1
-}
+
+// 3.5 alkaa: henkilön lisääminen
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
-  if (!body.content) {
+  if (!body.name) {
     return response.status(400).json({
       error: 'content missing'
     })
   }
-
+// 3.5 jatkuu: luodaan henkilö jos henkilön tiedot pyynnön mukana ->
   const person = {
-    id: generateId(),
+    id: Math.floor(Math.random() * 100000),
     name: body.name,
     number: body.number
   }
 
   persons = persons.concat(person)
-
   response.json(person)
 })
-
 
 
 const PORT = 3001
