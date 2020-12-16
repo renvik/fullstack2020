@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = 'http://localhost:3001/api/persons'
+const baseUrl = '/api/persons'
 
 // FRONTEND: backendin kanssa tapahtuvat kommunikointi on eristetty tähän moduuliin, mm. axiosin käyttö poistettu app.js:stä ja tehdään tässä
 
