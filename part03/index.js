@@ -1,17 +1,14 @@
-// yleistä: ctrl + c sammuttaa palvelimen, node index.js käynnistää sen
-// muutamuuta: fn + f5 -> refresh browser
-// auto-indet: ctrl + shift + i
-// comment: ctrl + k + c ja ctrl + k + u
-// screensbot: ctrl + shift + insert
-// konsolin avaaminen: fn + f12
-// VAIHE: tehtävä 3.7: valmis
 
+// Puhelinluettelon BACK-END
+// VAIHE: tehtävä 3.7: valmis
 // importoidaan noden web server -moduuli:
 const { request, response } = require('express')
 const express = require('express')
 const app = express()
+const cors = require('cors')
 const morgan = require('morgan')
-// lisätään middleware / json-parseri (se ottaa pyynnön mukana olevan JSON-muotoisen datan, muuttaa sen Javascript-olioksi ja sijoittaa request-olion kenttään body ennen kuin routen käsittelijää kutsutaan.)
+// otetaan middlewaret käyttöön (cors, json-parseri) 
+app.use(cors())
 app.use(express.json())
 
 // otetaan lokitukseen morgan-middleware käyttöön 'tiny'-formatissa
